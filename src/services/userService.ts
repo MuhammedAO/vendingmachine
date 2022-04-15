@@ -1,7 +1,27 @@
 import asyncHandler from "express-async-handler"
 import UserModel from "../models/UserModel"
 import generateToken from "../utils/generateToken"
-import { registerUserValidation } from "../validation/userValidation"
+import { loginUserValidation, registerUserValidation } from "../validation/userValidation"
+
+
+
+const authenticateUserService = asyncHandler(async (req, res) => {
+  const { email, password } = req.body
+  await loginUserValidation(req.body)
+  const user = await UserModel.findOne({ email })
+
+  if (user && (await user.matchPassword(password))) {
+    res.json({
+      _id: user._id,
+      username: user.username,
+      role: user.role,
+      token: generateToken(user._id),
+    })
+  } else {
+    res.status(401)
+    throw new Error("Invalid email or password")
+  }
+})
 
 const registerUserService = asyncHandler(async (req, res): Promise<void> => {
   const { role, username, password } = req.body
@@ -25,6 +45,7 @@ const registerUserService = asyncHandler(async (req, res): Promise<void> => {
 
   if (user) {
     res.status(201).json({
+      _id: user._id,
       username: user.username,
       role: user.role,
       token: generateToken(user._id),
@@ -35,4 +56,4 @@ const registerUserService = asyncHandler(async (req, res): Promise<void> => {
   }
 })
 
-export {registerUserService}
+export {registerUserService, authenticateUserService}
