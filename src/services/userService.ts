@@ -56,4 +56,20 @@ const registerUserService = asyncHandler(async (req, res): Promise<void> => {
   }
 })
 
-export {registerUserService, authenticateUserService}
+
+const getUserProfileService = asyncHandler(async (req:any, res) => {
+  const user = await UserModel.findById(req.user._id)
+  if (user) {
+    res.json({
+      _id: user._id,
+      username: user.username,
+      role: user.role,
+    })
+  } else {
+    res.status(404)
+    throw new Error('user not found')
+  }
+})
+
+
+export {registerUserService, authenticateUserService, getUserProfileService}
