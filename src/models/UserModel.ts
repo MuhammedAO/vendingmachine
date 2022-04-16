@@ -11,9 +11,6 @@ const UserSchema = new mongoose.Schema({
   role: {
     type: String,
   },
-  token: {
-    type: String,
-  },
   deposit: {
     type: Number,
   },
