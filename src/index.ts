@@ -2,6 +2,7 @@ import express from 'express'
 import connectDB from './db';
 import { errorHandler, notFound } from './middleware/errorMiddleware'
 import userRoutes from './routes/userRoutes'
+import productRoutes from './routes/productRoutes'
 
 connectDB()
 
@@ -10,6 +11,8 @@ const app = express()
 app.use(express.json())
 
 app.use('/api/users', userRoutes)
+
+app.use('/api/products', productRoutes)
 
 
 
