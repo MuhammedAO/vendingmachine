@@ -18,7 +18,11 @@ const authGuard = expressAsyncHandler(
 
         const { id } = jwt.verify(token, "Secret") as JwtPayload
 
+ 
+
         req.user = await UserModel.findById(id).select("-password")
+
+        if(!req.user) throw new Error()
 
         next()
       } catch (error) {
