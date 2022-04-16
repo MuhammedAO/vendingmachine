@@ -1,5 +1,10 @@
 import asyncHandler from "express-async-handler"
-import UserModel from "../models/UserModel"
+import {
+  getUserByEmail,
+  getUserByIdDao,
+  getUserByUsername,
+  createUserDao,
+} from "../dao/userDAO"
 import generateToken from "../utils/generateToken"
 import {
   loginUserValidation,
@@ -9,7 +14,7 @@ import {
 const authenticateUserService = asyncHandler(async (req, res) => {
   const { email, password } = req.body
   await loginUserValidation(req.body)
-  const user = await UserModel.findOne({ email })
+  const user = await getUserByEmail(email)
 
   if (user && (await user.matchPassword(password))) {
     res.json({
@@ -32,18 +37,14 @@ const registerUserService = asyncHandler(async (req, res): Promise<void> => {
 
   await registerUserValidation(req.body)
 
-  const userExists = await UserModel.findOne({ username })
+  const userExists = await getUserByUsername(username)
 
   if (userExists) {
     res.status(400)
     throw new Error(" user already exists")
   }
 
-  const user = await UserModel.create({
-    role,
-    username,
-    password,
-  })
+  const user = await createUserDao({ role, username, password })
 
   if (user) {
     res.status(201).json({
@@ -59,7 +60,7 @@ const registerUserService = asyncHandler(async (req, res): Promise<void> => {
 })
 
 const getUserProfileService = asyncHandler(async (req: any, res) => {
-  const user = await UserModel.findById(req.user._id)
+  const user = await getUserByIdDao(req.user._id)
   if (user) {
     res.json({
       _id: user._id,
@@ -73,7 +74,8 @@ const getUserProfileService = asyncHandler(async (req: any, res) => {
 })
 
 const updateUserProfileService = asyncHandler(async (req: any, res) => {
-  const user = await UserModel.findById(req.user._id)
+  const user = await getUserByIdDao(req.user._id)
+
   if (user) {
     user.username = req.body.username || user.username
     user.role = req.body.role || user.role
