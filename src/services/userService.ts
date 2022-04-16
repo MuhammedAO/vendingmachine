@@ -1,6 +1,5 @@
 import asyncHandler from "express-async-handler"
 import {
-  getUserByEmail,
   getUserByIdDao,
   getUserByUsername,
   createUserDao,
@@ -13,9 +12,9 @@ import {
 } from "../validation/userValidation"
 
 const authenticateUserService = asyncHandler(async (req, res) => {
-  const { email, password } = req.body
+  const { username, password } = req.body
   await loginUserValidation(req.body)
-  const user = await getUserByEmail(email)
+  const user = await getUserByUsername(username)
 
   if (user && (await user.matchPassword(password))) {
     res.json({
@@ -52,7 +51,6 @@ const registerUserService = asyncHandler(async (req, res): Promise<void> => {
       _id: user._id,
       username: user.username,
       role: user.role,
-      token: generateToken(user._id),
     })
   } else {
     res.status(400)
