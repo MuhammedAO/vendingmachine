@@ -1,9 +1,10 @@
 import asyncHandler from "express-async-handler"
 import UserModel from "../models/UserModel"
 import generateToken from "../utils/generateToken"
-import { loginUserValidation, registerUserValidation } from "../validation/userValidation"
-
-
+import {
+  loginUserValidation,
+  registerUserValidation,
+} from "../validation/userValidation"
 
 const authenticateUserService = asyncHandler(async (req, res) => {
   const { email, password } = req.body
@@ -26,7 +27,8 @@ const authenticateUserService = asyncHandler(async (req, res) => {
 const registerUserService = asyncHandler(async (req, res): Promise<void> => {
   const { role, username, password } = req.body
 
-  if (!((role === "seller") || (role === "buyer"))) throw new Error("A role can be either buyer or seller");
+  if (!(role === "seller" || role === "buyer"))
+    throw new Error("A role can be either buyer or seller")
 
   await registerUserValidation(req.body)
 
@@ -56,8 +58,7 @@ const registerUserService = asyncHandler(async (req, res): Promise<void> => {
   }
 })
 
-
-const getUserProfileService = asyncHandler(async (req:any, res) => {
+const getUserProfileService = asyncHandler(async (req: any, res) => {
   const user = await UserModel.findById(req.user._id)
   if (user) {
     res.json({
@@ -67,9 +68,36 @@ const getUserProfileService = asyncHandler(async (req:any, res) => {
     })
   } else {
     res.status(404)
-    throw new Error('user not found')
+    throw new Error("user not found")
   }
 })
 
+const updateUserProfileService = asyncHandler(async (req: any, res) => {
+  const user = await UserModel.findById(req.user._id)
+  if (user) {
+    user.username = req.body.username || user.username
+    user.role = req.body.role || user.role
+    if (req.body.password) {
+      user.password = req.body.password
+    }
 
-export {registerUserService, authenticateUserService, getUserProfileService}
+    const updatedUser = await user.save()
+
+    res.json({
+      _id: updatedUser._id,
+      username: updatedUser.username,
+      role: updatedUser.role,
+      token: generateToken(updatedUser._id),
+    })
+  } else {
+    res.status(404)
+    throw new Error("user not found")
+  }
+})
+
+export {
+  registerUserService,
+  authenticateUserService,
+  getUserProfileService,
+  updateUserProfileService,
+}
