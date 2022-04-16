@@ -7,9 +7,6 @@ export const createUserDao = async (userData: IUserCreate) =>
 export const getUserByUsername = async (username: string) =>
   UserModel.findOne({ username })
 
-export const getUserByEmail = async (email: string) =>
-  UserModel.findOne({ email })
-
 export const getUserByIdDao = async (id: string) => UserModel.findById(id)
 
 export const deleteUserByIdDao = async (id: string) => UserModel.deleteOne({_id: id})
