@@ -4,6 +4,7 @@ import {
   getUserByIdDao,
   getUserByUsername,
   createUserDao,
+  deleteUserByIdDao,
 } from "../dao/userDAO"
 import generateToken from "../utils/generateToken"
 import {
@@ -97,9 +98,21 @@ const updateUserProfileService = asyncHandler(async (req: any, res) => {
   }
 })
 
+const deleteUserProfileService = asyncHandler(async (req: any, res) => {
+  const user = await getUserByIdDao(req.user._id)
+  if (user) {
+    await deleteUserByIdDao(req.user._id)
+    res.json({message: "User deleted"})
+  } else {
+    res.status(404)
+    throw new Error("user not found")
+  }
+})
+
 export {
   registerUserService,
   authenticateUserService,
   getUserProfileService,
   updateUserProfileService,
+  deleteUserProfileService
 }
