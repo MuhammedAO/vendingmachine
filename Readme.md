@@ -30,7 +30,7 @@ You will recieve this token as a response once you've logged in. Please copy thi
 
 # User Routes
 
-<!-- authGuard = routes that require authentication -->
+authGuard: routes that require authentication
 ```
 router.post("/api/users/register")
 router.post("/api/users/login")
@@ -50,8 +50,10 @@ router.put("/api/users/deposit/reset", authGuard)
 ```
 
 # Product Routes
-<!-- id = id of the product. This will be returned when a product has been created as an _id field -->
-<!-- productAmount: quantity of the product you want to purchase -->
+
+id: id of the product. This will be returned when a product has been created as an _id field.
+
+productAmount: quantity of the product you want to purchase
 ```
 router.get('/')
 router.post('/create', authGuard)
