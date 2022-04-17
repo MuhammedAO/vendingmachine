@@ -13,6 +13,7 @@ const UserSchema = new mongoose.Schema({
   },
   deposit: {
     type: Number,
+    default: 0
   },
 })
 
