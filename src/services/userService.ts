@@ -1,4 +1,4 @@
-import asyncHandler from "express-async-handler"
+import { Request, Response } from "express"
 import {
   getUserByIdDao,
   getUserByUsername,
@@ -6,12 +6,14 @@ import {
   deleteUserByIdDao,
 } from "../dao/userDAO"
 import generateToken from "../utils/generateToken"
+import { updateUserDao } from "../dao/userDAO"
 import {
   loginUserValidation,
   registerUserValidation,
 } from "../validation/userValidation"
 
-const authenticateUserService = asyncHandler(async (req, res) => {
+
+const authenticateUserService = async (req: Request, res: Response) => {
   const { username, password } = req.body
   await loginUserValidation(req.body)
   const user = await getUserByUsername(username)
@@ -27,9 +29,12 @@ const authenticateUserService = asyncHandler(async (req, res) => {
     res.status(401)
     throw new Error("Invalid email or password")
   }
-})
+}
 
-const registerUserService = asyncHandler(async (req, res): Promise<void> => {
+const registerUserService = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { role, username, password } = req.body
 
   if (!(role === "seller" || role === "buyer"))
@@ -56,9 +61,9 @@ const registerUserService = asyncHandler(async (req, res): Promise<void> => {
     res.status(400)
     throw new Error("invalid user data")
   }
-})
+}
 
-const getUserProfileService = asyncHandler(async (req: any, res) => {
+const getUserProfileService = async (req: any, res: Response) => {
   const user = await getUserByIdDao(req.user._id)
   if (user) {
     res.json({
@@ -70,9 +75,9 @@ const getUserProfileService = asyncHandler(async (req: any, res) => {
     res.status(404)
     throw new Error("user not found")
   }
-})
+}
 
-const updateUserProfileService = asyncHandler(async (req: any, res) => {
+const updateUserProfileService = async (req: any, res: Response) => {
   const user = await getUserByIdDao(req.user._id)
 
   if (user) {
@@ -94,23 +99,67 @@ const updateUserProfileService = asyncHandler(async (req: any, res) => {
     res.status(404)
     throw new Error("user not found")
   }
-})
+}
 
-const deleteUserProfileService = asyncHandler(async (req: any, res) => {
+const deleteUserProfileService = async (req: any, res: Response) => {
   const user = await getUserByIdDao(req.user._id)
   if (user) {
     await deleteUserByIdDao(req.user._id)
-    res.json({message: "User deleted"})
+    res.json({ message: "User deleted" })
   } else {
     res.status(404)
     throw new Error("user not found")
   }
-})
+}
+
+export const acceptableCoins = [5, 10, 20, 50, 100]
+
+const userAccountDepositService = async (req: any, res: Response) => {
+  const { deposit } = req.body
+
+  if (!acceptableCoins.includes(deposit))
+    throw new Error("You can only deposit 5,10,20,50,100 cents")
+
+  const user = await getUserByIdDao(req.user._id)
+  const { _id, role } = user
+
+  if (role !== "buyer") throw new Error("Only buyers can make deposits!")
+
+  let userDeposit = user.deposit
+
+  const updatedDeposit = (userDeposit += deposit)
+
+  if (user) {
+    await updateUserDao({ _id, deposit: updatedDeposit })
+    res.json({
+      message: `Your vending account has been deposited with ${deposit} cents`,
+    })
+  } else {
+    res.status(400)
+    throw new Error("Failed to add deposit")
+  }
+}
+
+const resetUserDepositService = async (req: any, res: Response) => {
+  const user = await getUserByIdDao(req.user._id)
+  const { _id, role } = user
+  if (role !== "buyer") throw new Error("Only buyers reset their deposits!")
+
+  if (user) {
+    await updateUserDao({ _id, deposit: 0 })
+    res.json({ message: "Your deposit has been reset!" })
+  } else {
+    res.status(404)
+    throw new Error("user not found")
+  }
+}
 
 export {
   registerUserService,
   authenticateUserService,
   getUserProfileService,
   updateUserProfileService,
-  deleteUserProfileService
+  deleteUserProfileService,
+  userAccountDepositService,
+  resetUserDepositService,
 }
