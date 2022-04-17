@@ -1,5 +1,5 @@
 const notFound = (req: { originalUrl: any },res: { status: (arg0: number) => void },next: (arg0: Error) => void) => {
-  const error = new Error(`not found! ${req.originalUrl}`)
+  const error = new Error(`Route not found! ${req.originalUrl}`)
   res.status(404)
   next(error)
 }
