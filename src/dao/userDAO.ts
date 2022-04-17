@@ -1,4 +1,4 @@
-import { IUserCreate } from "../interface/IUser"
+import { IUserCreate, IUserUpdate } from '../interface/IUser';
 import UserModel from "../models/UserModel"
 
 export const createUserDao = async (userData: IUserCreate) =>
@@ -6,6 +6,12 @@ export const createUserDao = async (userData: IUserCreate) =>
 
 export const getUserByUsername = async (username: string) =>
   UserModel.findOne({ username })
+
+  export const updateUserDao = async (userData: IUserUpdate) => {
+    return UserModel.findOneAndUpdate({ _id: userData._id }, userData, {
+      new: true,
+    })
+  }
 
 export const getUserByIdDao = async (id: string) => UserModel.findById(id)
 
