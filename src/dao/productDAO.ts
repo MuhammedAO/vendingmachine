@@ -9,6 +9,8 @@ export const updateProductDao = async (productData: IProductUpdate) => {
     new: true,
   })
 }
+
+export const getProductsDao = async () => ProductModel.find({})
 export const getProductByIdDao = async (id: string) => ProductModel.findById(id)
 
 export const deleteProductByIdDao = async (id: string) => ProductModel.deleteOne({_id: id})
