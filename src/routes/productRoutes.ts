@@ -1,13 +1,17 @@
 import express from 'express'
+import { buyProductsController, createProductController, deleteProductsController, getProductsController, updateProductController } from '../controllers/productController'
 import { authGuard } from '../middleware/authMiddleware'
-import { createProductService, deleteProductService, getProductsService, updateProductService } from '../services/productService'
 
 
 const router = express.Router()
 
-router.get('/', getProductsService)
-router.post('/create', authGuard, createProductService)
-router.put('/update/:id', authGuard, updateProductService)
-router.delete('/delete/:id', authGuard, deleteProductService)
+router.get('/', getProductsController)
+router.post('/create', authGuard, createProductController)
+router.put('/update/:id', authGuard, updateProductController)
+router.delete('/delete/:id', authGuard, deleteProductsController)
+
+
+//buy
+router.post('/buy/:id/:productAmount', authGuard, buyProductsController)
 
 export default router
