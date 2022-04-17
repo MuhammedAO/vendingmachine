@@ -3,8 +3,8 @@ import { IUserCreate, IUserLogin } from '../interface/IUser';
 
 export const registerUserValidation = (userData: IUserCreate) => {
   const schema = Joi.object({
-    username: Joi.string().required(),
-    password: Joi.string().required(),
+    username: Joi.string().required().min(2),
+    password: Joi.string().required().min(2),
     role: Joi.string().required(),
 
   });
@@ -13,8 +13,8 @@ export const registerUserValidation = (userData: IUserCreate) => {
 };
 export const loginUserValidation = (userData: IUserLogin) => {
   const schema = Joi.object({
-    username: Joi.string().required(),
-    password: Joi.string().required(),
+    username: Joi.string().required().min(2),
+    password: Joi.string().required().min(2),
   });
 
   return schema.validateAsync(userData);
