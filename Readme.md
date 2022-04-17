@@ -1,5 +1,3 @@
-Hello! 
-
 To run this application, 
 
 ## Requirements
@@ -8,7 +6,7 @@ To run this application,
 
 ## Getting started
 
-Run the following command on your local environment:
+Run the following commands on your local environment:
 
 ```
 $ cd vendingmachine
