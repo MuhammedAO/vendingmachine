@@ -34,7 +34,7 @@ const authGuard = expressAsyncHandler(
 
     if (!token) {
       res.status(401)
-      throw new Error("Unauthorized")
+      throw new Error("You are unauthorized to make this request")
     }
   }
 )
